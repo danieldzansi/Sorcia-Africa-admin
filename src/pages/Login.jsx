@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Truck, Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
+
+const LOGO_URL = "https://res.cloudinary.com/dpbb0exnp/image/upload/v1772459059/5848267812768517528_rogh7m.jpg";
 
 export default function Login() {
   const { login } = useAuth();
@@ -40,9 +42,7 @@ export default function Login() {
       >
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-accent-500/10 border border-accent-500/20 flex items-center justify-center">
-            <Truck className="w-6 h-6 text-accent-400" />
-          </div>
+          <img src={LOGO_URL} alt="Sorcia Africa" className="w-12 h-12 rounded-2xl object-cover" />
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight">
               Sorcia

@@ -9,9 +9,10 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Truck,
 } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
+
+const LOGO_URL = "https://res.cloudinary.com/dpbb0exnp/image/upload/v1772459059/5848267812768517528_rogh7m.jpg";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -33,9 +34,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="p-6 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-accent-500/10 border border-accent-500/20 flex items-center justify-center">
-            <Truck className="w-5 h-5 text-accent-400" />
-          </div>
+          <img src={LOGO_URL} alt="Sorcia Africa" className="w-10 h-10 rounded-xl object-cover" />
           <div>
             <h1 className="text-lg font-bold text-white tracking-tight">
               Sorcia

@@ -1,17 +1,8 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Search, Filter, Eye, FileText, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Filter, Eye, FileText, ExternalLink, X } from "lucide-react";
 import { api } from "../lib/api";
 import CreateQuoteModal from "../components/CreateQuoteModal";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.05 } },
-};
-const item = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0 },
-};
 
 export default function ProductRequests() {
   const [requests, setRequests] = useState([]);
@@ -19,6 +10,7 @@ export default function ProductRequests() {
   const [search, setSearch] = useState("");
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState("");
+  const [lightboxImg, setLightboxImg] = useState(null);
 
   useEffect(() => {
     api.getRequests().then((data) => {
@@ -40,16 +32,8 @@ export default function ProductRequests() {
   };
 
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="space-y-6"
-    >
-      <motion.div
-        variants={item}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-      >
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Product Requests</h1>
           <p className="text-dark-400 text-sm mt-1">
@@ -72,10 +56,10 @@ export default function ProductRequests() {
             Filter
           </button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Table */}
-      <motion.div variants={item} className="glass-card overflow-hidden">
+      <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -123,7 +107,7 @@ export default function ProductRequests() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((req, i) => {
+                filtered.map((req) => {
                   const images = (() => {
                     try {
                       return JSON.parse(req.productImage);
@@ -132,11 +116,7 @@ export default function ProductRequests() {
                     }
                   })();
                   return (
-                    <motion.tr
-                      key={req.id}
-                      variants={item}
-                      className="table-row"
-                    >
+                    <tr key={req.id} className="table-row">
                       <td className="px-6 py-4">
                         <div>
                           <p className="text-sm font-medium text-dark-100">
@@ -156,7 +136,8 @@ export default function ProductRequests() {
                           <img
                             src={images[0]}
                             alt=""
-                            className="w-10 h-10 rounded-lg object-cover border border-dark-700/50"
+                            onClick={() => setLightboxImg(images[0])}
+                            className="w-10 h-10 rounded-lg object-cover border border-dark-700/50 cursor-pointer hover:ring-2 hover:ring-accent-500/50 transition-all"
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-dark-800 border border-dark-700/50 flex items-center justify-center">
@@ -188,14 +169,43 @@ export default function ProductRequests() {
                           Create Quote
                         </button>
                       </td>
-                    </motion.tr>
+                    </tr>
                   );
                 })
               )}
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
+
+      {/* Image Lightbox */}
+      <AnimatePresence>
+        {lightboxImg && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxImg(null)}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          >
+            <button
+              onClick={() => setLightboxImg(null)}
+              className="absolute top-6 right-6 text-white/70 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              src={lightboxImg}
+              alt=""
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <CreateQuoteModal
         isOpen={quoteModalOpen}
@@ -205,6 +215,6 @@ export default function ProductRequests() {
         }}
         prefillRequestId={selectedRequestId}
       />
-    </motion.div>
+    </div>
   );
 }
