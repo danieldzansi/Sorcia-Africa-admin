@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   LayoutDashboard,
   PackageSearch,
@@ -9,10 +10,12 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  X,
 } from "lucide-react";
 import { useAuth } from "../lib/AuthContext";
 
-const LOGO_URL = "https://res.cloudinary.com/dpbb0exnp/image/upload/v1772459059/5848267812768517528_rogh7m.jpg";
+const LOGO_URL =
+  "https://res.cloudinary.com/dpbb0exnp/image/upload/v1772459059/5848267812768517528_rogh7m.jpg";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -25,16 +28,18 @@ const navItems = [
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
-export default function Sidebar() {
+function SidebarContent({ logout, onNavClick }) {
   const location = useLocation();
-  const { logout } = useAuth();
-
   return (
-    <aside className="hidden lg:flex flex-col w-[260px] border-r border-dark-800/60 bg-dark-900/80 backdrop-blur-xl">
+    <>
       {/* Logo */}
       <div className="p-6 pb-4">
         <div className="flex items-center gap-3">
-          <img src={LOGO_URL} alt="Sorcia Africa" className="w-10 h-10 rounded-xl object-cover" />
+          <img
+            src={LOGO_URL}
+            alt="Sorcia Africa"
+            className="w-10 h-10 rounded-xl object-cover"
+          />
           <div>
             <h1 className="text-lg font-bold text-white tracking-tight">
               Sorcia
@@ -54,6 +59,7 @@ export default function Sidebar() {
             <NavLink
               key={to}
               to={to}
+              onClick={onNavClick}
               className={isActive ? "sidebar-link-active" : "sidebar-link"}
             >
               <Icon className="w-[18px] h-[18px]" />
@@ -73,6 +79,49 @@ export default function Sidebar() {
           <span>Logout</span>
         </button>
       </div>
-    </aside>
+    </>
+  );
+}
+
+export default function Sidebar({ mobileOpen, onClose }) {
+  const { logout } = useAuth();
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex flex-col w-[260px] border-r border-dark-800/60 bg-dark-900/80 backdrop-blur-xl">
+        <SidebarContent logout={logout} />
+      </aside>
+
+      {/* Mobile sidebar overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+            />
+            <motion.aside
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed inset-y-0 left-0 z-50 flex flex-col w-[260px] bg-dark-900 border-r border-dark-800/60 lg:hidden"
+            >
+              <button
+                onClick={onClose}
+                className="absolute top-5 right-4 text-dark-400 hover:text-white p-1 rounded-lg hover:bg-dark-800 transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <SidebarContent logout={logout} onNavClick={onClose} />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
