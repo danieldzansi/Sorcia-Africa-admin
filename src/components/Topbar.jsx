@@ -12,7 +12,10 @@ export default function Topbar({ onMenuToggle }) {
       <header className="h-16 border-b border-dark-800/60 bg-dark-900/60 backdrop-blur-xl flex items-center justify-between px-6 lg:px-8">
         {/* Left: Search */}
         <div className="flex items-center gap-4 flex-1">
-          <button onClick={onMenuToggle} className="lg:hidden text-dark-400 hover:text-white transition-colors">
+          <button
+            onClick={onMenuToggle}
+            className="lg:hidden text-dark-400 hover:text-white transition-colors"
+          >
             <Menu className="w-5 h-5" />
           </button>
           <div className="relative max-w-md w-full hidden sm:block">
